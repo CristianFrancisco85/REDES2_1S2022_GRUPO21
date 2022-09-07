@@ -1,4 +1,4 @@
-# Topologia 
+# Topologia
 
 ## VLANS
 
@@ -13,19 +13,19 @@
 | 999    | Black Hole        |
 
 
-## VTP 
+## VTP
 
 Dominio y Password:  g21
 
 | Switch | Modo   |
 |--------|--------|
-| S0     | Server |
+| R0     | Server |
+| S0     | Client |
 | S1     | Client |
 | S2     | Client |
 | S3     | Client |
 | S4     | Client |
 | S5     | Client |
-| S6     | Client |
 
 
 ## Tabla Subredes
@@ -41,7 +41,7 @@ Aprovechamiento del 71% de 192.168.83.0/24
 | 99   | 30    | 192.168.83.128 /27 | 255.255.255.224 | 92.168.83.129  | 192.168.83.158 | 192.168.83.159 |
 | 999  | 30    | 192.168.83.160 /27 | 255.255.255.224 | 192.168.83.161 | 192.168.83.190 | 192.168.83.191 |
 
-## Configuracion de Hosts 
+## Configuracion de Hosts
 
 | HOST            | VLAN | IP            | MASK            | GATEWAY       |
 |-----------------|------|---------------|-----------------|---------------|
@@ -59,7 +59,7 @@ Aprovechamiento del 71% de 192.168.83.0/24
 
 ## Configuraciones Dispositivos
 
-### Switch R0 
+### Switch R0
 
 VTP, VLAN y Routing:
 ```
@@ -456,6 +456,17 @@ exit
 
 ```
 
+### Escenario 1 - LACP y PVST
+
+De los switches S0 - S5, activar STP y definir modo PVST
+```
+enable
+config t
+spanning-tree mode pvst
+
+```
+
+
 # Escenario de mejor convergencia
 
 Falta configurar STP
@@ -467,7 +478,7 @@ Para cambiar a PAGP, se debe cambiar en la configuracion DE CADA SWITCH y cada i
 Por ejemplo en S0
 
 Cambiar esto
-    
+
 ```
 int range f0/2 - 3
 channel-protocol lacp
