@@ -466,10 +466,54 @@ spanning-tree mode pvst
 
 ```
 
+### Escenario 2 - LACP y PVST
+
+De los switches S0 - S5, activar STP y definir modo R-PVST
+```
+enable
+config t
+spanning-tree mode rapid-pvst
+
+```
+
 
 # Escenario de mejor convergencia
 
-Falta configurar STP
+Para determiar el dispositivo raíz, hay que observar que en Root y Bridge tengan la misma dirección MAC y que en las interfaces estén con el rol "desg"
+En el escenario 1 y 2, el dispositivo raíz es S0
+```
+sh spanning-tree
+```
+
+Luego, hay que verificar en qué modo esta el switch con el siguiente comando (PVST o RPVST)
+```
+do show sp sum
+```
+
+Después, debemos mantener un ping extendido en las máquinas
+```
+ping -t numero_ip
+```
+
+En este punto, debemos de cambiar al modo contrario del que se encuentra el switch, con el siguiente comando:
+```
+spanning-tree mode pvst
+```
+o bien
+```
+spanning-tree mode rapid-pvst
+```
+
+Tomamos nota con cronómetro para medir la convergencia y estos fueron los resultados:
+
+| Escenario       | Tipo Ethernet channel | Protocolo Spanning Tree | Tiempo en tomar la conexión | 
+|-----------------|-----------------------|-------------------------|-----------------------------|
+| 1               | LACP                  | PVST                    | 49 segundos                 |
+| 2               | LACP                  | R-PVST                  | 16 segundos                 |
+| 3               | PAgP                  | PVST                    | x                           |
+| 4               | PAgP                  | R-PVST                  | x                           |
+
+Como conclusión, dejamos la configuración RPVST porque como se puede apreciar en la tabla, su tiempo de reacción es más rápido que el PVST.
 
 El EtherChannel se configuro con LACP
 
