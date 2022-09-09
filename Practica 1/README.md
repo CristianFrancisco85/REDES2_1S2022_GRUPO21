@@ -510,8 +510,8 @@ Tomamos nota con cronómetro para medir la convergencia y estos fueron los resul
 |-----------------|-----------------------|-------------------------|-----------------------------|
 | 1               | LACP                  | PVST                    | 49 segundos                 |
 | 2               | LACP                  | R-PVST                  | 16 segundos                 |
-| 3               | PAgP                  | PVST                    | x                           |
-| 4               | PAgP                  | R-PVST                  | x                           |
+| 3               | PAgP                  | PVST                    | 63 segundos                 |
+| 4               | PAgP                  | R-PVST                  | 42 segundos                 |
 
 Como conclusión, dejamos la configuración RPVST porque como se puede apreciar en la tabla, su tiempo de reacción es más rápido que el PVST.
 
