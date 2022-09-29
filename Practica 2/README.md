@@ -341,3 +341,66 @@ Aprovechamiento del 24% de 192.168.51.0/24
 | Desarrollo Empresarial | 30    | 192.168.51.0/27  | 255.255.255.224 | 192.168.51.1   | 192.168.51.30  | 192.168.51.31  |
 | Desarrollo Económico   | 30    | 192.168.51.32/27 | 255.255.255.224 | 192.168.51.33  | 192.168.51.62  | 192.168.51.63  |
 
+
+## Configuracion de Interfaces
+
+### R11
+```
+enable
+conf t
+
+int G0/0
+ip address 192.168.51.33 255.255.255.224
+no shutdown
+exit
+
+int G0/1
+ip address 10.1.10.2 255.255.255.252
+no shutdown
+exit 
+```
+
+### R12
+```
+enable
+conf t
+
+int G0/0
+ip address 192.168.51.1 255.255.255.224
+no shutdown
+exit
+
+int G0/1
+ip address 10.1.10.1 255.255.255.252
+no shutdown
+exit 
+```
+
+
+## Configuracion de Interfaces
+
+### R11
+```
+enable
+conf t
+
+router eigrp 100
+network 10.1.10.0 0.0.0.3
+no auto-summary
+
+exit 
+
+```
+
+### R12
+```
+enable
+conf t
+
+router eigrp 100
+network 10.1.10.0 0.0.0.3
+no auto-summary
+
+exit 
+
+```
