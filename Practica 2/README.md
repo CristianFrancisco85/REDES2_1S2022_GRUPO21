@@ -26,6 +26,11 @@ ip address 10.1.1.1 255.255.255.252
 no shutdown
 exit
 
+int S0/3/1
+ip address 10.1.13.1 255.255.255.252
+no shutdown
+exit
+
 int G0/0
 ip address 10.1.2.1 255.255.255.252
 no shutdown
@@ -119,19 +124,22 @@ exit
 
 router ospf 100
 redistribute rip subnets
+redistribute ospf 200 subnet
 exit
 
 router ospf 200
 redistribute rip subnets
+redistribute ospf 100 subnet
 exit
 
 router bgp 100
 network 10.1.1.0 mask 255.255.255.252
 neighbor 10.1.1.2 remote-as 200
+network 10.1.13.0 mask 255.255.255.252
+neighbor 10.1.13.2 remote-as 300
+redistribute ospf 100
+redistribute ospf 200
 exit
-
-router ospf 100
-redistribute bgp 200 metric 1 1 1 1 1
 
 ```
 
@@ -141,6 +149,14 @@ router ospf 100
 network 192.168.21.1 0.0.0.31 area 0
 network 10.1.2.0 0.0.0.3 area 0
 end
+
+access-list 2 permit 192.168.81.0 0.0.0.31
+access-list 2 permit 192.168.81.32 0.0.0.31
+access-list 2 permit 192.168.21.0 0.0.0.31
+
+interface g0/1
+ip access-group 2 out
+exit
 ```
 
 
@@ -150,6 +166,14 @@ router ospf 200
 network 192.168.21.33 0.0.0.31 area 0
 network 10.1.3.0 0.0.0.3 area 0
 end
+
+access-list 2 permit 192.168.81.0 0.0.0.31
+access-list 2 permit 192.168.81.32 0.0.0.31
+access-list 2 permit 192.168.21.0 0.0.0.31
+
+interface g0/1
+ip access-group 2 out
+exit
 ```
 
 ### R4
@@ -159,6 +183,12 @@ version 2
 no auto-summary
 network 192.168.21.64
 network 10.1.4.0
+
+access-list 2 permit 192.168.81.0 0.0.0.31
+
+interface g0/1
+ip access-group 2 out
+exit
 ```
 
 # Telefónica
@@ -186,6 +216,11 @@ exit
 
 int S0/3/0
 ip address 10.1.1.2 255.255.255.252
+no shutdown
+exit
+
+int S0/3/1
+ip address 10.1.14.2 255.255.255.252
 no shutdown
 exit
 ```
@@ -269,6 +304,9 @@ exit
 router bgp 200
 network 10.1.1.0 mask 255.255.255.252
 neighbor 10.1.1.1 remote-as 100
+network 10.1.14.0 mask 255.255.255.252
+neighbor 10.1.14.1 remote-as 300
+redistribute rip subnets
 exit
 ```
 
@@ -302,6 +340,15 @@ network 192.168.81.0
 network 10.1.7.0
 network 10.1.6.0
 exit
+
+access-list 2 permit 192.168.21.0 0.0.0.31
+access-list 2 permit 192.168.21.32 0.0.0.31
+access-list 2 permit 192.168.21.64 0.0.0.31
+access-list 2 permit 192.168.81.32 0.0.0.31
+
+interface g0/2
+ip access-group 2 out
+exit
 ```
 
 ### R8
@@ -318,6 +365,7 @@ exit
 
 router eigrp 100
 network 10.1.8.0 0.0.0.3
+network 192.168.81.32 0.0.0.31
 no auto-summary
 exit
 
@@ -327,6 +375,14 @@ exit
 
 router rip
 redistribute eigrp 100 metric 15
+exit
+
+access-list 2 permit 192.168.21.0 0.0.0.31
+access-list 2 permit 192.168.21.32 0.0.0.31
+access-list 2 permit 192.168.81.0 0.0.0.31
+
+interface g0/1
+ip access-group 2 out
 exit
 ```
 
@@ -344,6 +400,50 @@ Aprovechamiento del 24% de 192.168.51.0/24
 
 ## Configuracion de Interfaces
 
+### R9
+```
+enable
+conf t
+
+int G0/0
+ip address 10.1.9.2 255.255.255.252
+no shutdown
+exit
+
+int S0/3/0
+ip address 10.1.13.2 255.255.255.252
+no shutdown
+exit
+
+int S0/3/1
+ip address 10.1.14.1 255.255.255.252
+no shutdown
+exit
+
+```
+
+### R10
+```
+enable
+conf t
+
+int G0/0
+ip address 10.1.9.1 255.255.255.252
+no shutdown
+exit
+
+int G0/1
+ip address 10.1.11.1 255.255.255.252
+no shutdown
+exit 
+
+int G0/2
+ip address 10.1.12.2 255.255.255.252
+no shutdown
+exit 
+
+```
+
 ### R11
 ```
 enable
@@ -358,6 +458,12 @@ int G0/1
 ip address 10.1.10.2 255.255.255.252
 no shutdown
 exit 
+
+int G0/2
+ip address 10.1.11.2 255.255.255.252
+no shutdown
+exit 
+
 ```
 
 ### R12
@@ -374,22 +480,95 @@ int G0/1
 ip address 10.1.10.1 255.255.255.252
 no shutdown
 exit 
+
+int G0/2
+ip address 10.1.12.1 255.255.255.252
+no shutdown
+exit 
+
 ```
 
+## Configuracion de Ruteo
 
-## Configuracion de Interfaces
+### R9
+```
+enable
+conf t
+
+router bgp 300
+network 10.1.13.0 mask 255.255.255.252
+network 10.1.14.0 mask 255.255.255.252
+neighbor 10.1.13.1 remote-as 100
+neighbor 10.1.14.2 remote-as 200
+exit
+
+router eigrp 200
+network 10.1.9.0 0.0.0.3
+redistribute bgp 100 metric 1 1 1 1 1
+redistribute bgp 200 metric 1 1 1 1 1
+no auto-summary
+exit 
+
+router bgp 300
+redistribute eigrp 200
+exit
+
+```
+
+### R10
+```
+enable
+conf t
+
+router eigrp 200
+network 10.1.9.0 0.0.0.3
+no auto-summary
+exit 
+
+router ospf 100
+network 10.1.12.0 0.0.0.3 area 0
+exit
+
+router ospf 200
+network 10.1.11.0 0.0.0.3 area 0
+exit
+
+router ospf 100
+redistribute ospf 200 subnet
+exit
+
+router ospf 200
+redistribute ospf 100 subnet
+exit
+
+router eigrp 200
+redistribute ospf 100 metric 1 1 1 1 1
+redistribute ospf 200 metric 1 1 1 1 1
+exit 
+
+```
 
 ### R11
 ```
 enable
 conf t
 
-router eigrp 100
+router eigrp 200
 network 10.1.10.0 0.0.0.3
+network 192.168.51.32 0.0.0.31
 no auto-summary
-
 exit 
 
+router ospf 200
+network 192.168.51.32 0.0.0.31 area 0
+network 10.1.11.0 0.0.0.3 area 0
+exit
+
+access-list 2 permit 192.168.51.0 0.0.0.31
+
+interface g0/0
+ip access-group 2 out
+exit
 ```
 
 ### R12
@@ -397,10 +576,21 @@ exit
 enable
 conf t
 
-router eigrp 100
+router eigrp 200
 network 10.1.10.0 0.0.0.3
+network 192.168.51.0 0.0.0.31
 no auto-summary
-
 exit 
+
+router ospf 100
+network 192.168.51.0 0.0.0.31 area 0
+network 10.1.12.0 0.0.0.3 area 0
+exit
+
+access-list 2 permit 192.168.51.32 0.0.0.31
+
+interface g0/0
+ip access-group 2 out
+exit
 
 ```
