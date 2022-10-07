@@ -98,7 +98,7 @@ exit
 
 ## Configuracion de Ruteo
 
-### R1 
+### R1
 ```
 enable
 conf t
@@ -435,12 +435,12 @@ exit
 int G0/1
 ip address 10.1.11.1 255.255.255.252
 no shutdown
-exit 
+exit
 
 int G0/2
 ip address 10.1.12.2 255.255.255.252
 no shutdown
-exit 
+exit
 
 ```
 
@@ -457,12 +457,12 @@ exit
 int G0/1
 ip address 10.1.10.2 255.255.255.252
 no shutdown
-exit 
+exit
 
 int G0/2
 ip address 10.1.11.2 255.255.255.252
 no shutdown
-exit 
+exit
 
 ```
 
@@ -479,12 +479,12 @@ exit
 int G0/1
 ip address 10.1.10.1 255.255.255.252
 no shutdown
-exit 
+exit
 
 int G0/2
 ip address 10.1.12.1 255.255.255.252
 no shutdown
-exit 
+exit
 
 ```
 
@@ -507,7 +507,7 @@ network 10.1.9.0 0.0.0.3
 redistribute bgp 100 metric 1 1 1 1 1
 redistribute bgp 200 metric 1 1 1 1 1
 no auto-summary
-exit 
+exit
 
 router bgp 300
 redistribute eigrp 200
@@ -523,7 +523,7 @@ conf t
 router eigrp 200
 network 10.1.9.0 0.0.0.3
 no auto-summary
-exit 
+exit
 
 router ospf 100
 network 10.1.12.0 0.0.0.3 area 0
@@ -544,7 +544,7 @@ exit
 router eigrp 200
 redistribute ospf 100 metric 1 1 1 1 1
 redistribute ospf 200 metric 1 1 1 1 1
-exit 
+exit
 
 ```
 
@@ -557,7 +557,7 @@ router eigrp 200
 network 10.1.10.0 0.0.0.3
 network 192.168.51.32 0.0.0.31
 no auto-summary
-exit 
+exit
 
 router ospf 200
 network 192.168.51.32 0.0.0.31 area 0
@@ -580,7 +580,7 @@ router eigrp 200
 network 10.1.10.0 0.0.0.3
 network 192.168.51.0 0.0.0.31
 no auto-summary
-exit 
+exit
 
 router ospf 100
 network 192.168.51.0 0.0.0.31 area 0
@@ -593,4 +593,159 @@ interface g0/0
 ip access-group 2 out
 exit
 
+```
+
+## Configuración IPV6 a IPV4
+
+### Router 0
+```
+ena
+
+conf t
+
+(conf) ipv6 unicast-routing
+
+(conf) ipv6 router rip <nombre-id>
+
+(conf) int gig0/0
+
+(conf-if) ipv6 address 2001:DB8:A:1::1/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+
+(conf) int gig0/1
+
+(conf-if) ipv6 address 2001:DB8:B:1::1/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+```
+
+### Router 1
+```
+ena
+
+conf t
+
+(conf) ipv6 unicast-routing
+
+(conf) ipv6 router rip <nombre-id>
+
+(conf) int gig0/0
+
+(conf-if) ipv6 address 2001:DB8:A:1::3/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+
+(conf) int gig0/1
+
+(conf-if) ipv6 address 2001:DB8:B:1::3/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+```
+
+### Router 2
+```
+ena
+
+conf t
+
+(conf) ipv6 unicast-routing
+
+(conf) ipv6 router rip <nombre-id>
+
+(conf) int gig0/0
+
+(conf-if) ipv6 address 2001:DB8:A:1::5/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+
+(conf) int gig0/1
+
+(conf-if) ipv6 address 2001:DB8:B:1::5/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+```
+
+### Configuración Tunneling
+### Router 11, 12 y 13
+```
+(conf) ipv6 router rip <nombre-id>
+
+(conf-rtr) exit
+
+(conf) int gig0/1
+
+(conf-if) ipv6 address 2001:DB8:B:2::2/64
+
+(conf-if) ipv6 rip redv6 enable
+
+(conf-if) no shutdown
+
+(conf-if) exit
+
+(conf) interface Tunnel0
+
+(conf-if) ipv6 address 3000::2/112
+
+(conf-if) ipv6 rip <nombre-id> enable
+
+(conf-if) tunnel source gig0/0
+
+(conf-if) tunnel destination 192.168.21.4
+
+(conf-if) tunnel mode ipv6ip
+```
+
+### Configuración OSPF
+
+```
+> Router 11
+
+(conf) router ospf 1
+
+(conf-router) router-id 1.1.1.1
+
+(conf-router) network 192.168.1.0 0.0.0.3 area 0
+
+> Router 12
+
+(conf) router ospf 1
+
+(conf-router) router-id 2.2.2.2
+
+(conf-router) network 192.168.1.0 0.0.0.3 area 0
+
+(conf-router) network 192.168.1.4 0.0.0.3 area 0
+
+> Router 13
+
+(conf) router ospf 1
+
+(conf-router) router-id 3.3.3.3
+
+(conf-router) network 192.168.1.4 0.0.0.3 area 0
 ```
