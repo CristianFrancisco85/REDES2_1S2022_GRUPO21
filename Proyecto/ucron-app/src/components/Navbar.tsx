@@ -14,9 +14,9 @@ import { List, ListItem, ListItemText } from '@mui/material';
 import { useState } from 'react';
 
 const pages = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Home', href: '/'},
+    { name: 'Administradores', href: 'administradores'},
+    { name: 'Desarolladores', href: 'desarolladores'},
 ]
 
 export const NavBar = () => {
