@@ -1,3 +1,9 @@
+CREATE DATABASE redes;
+
+ALTER DATABASE redes OWNER TO postgres;
+
+\connect redes
+
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (

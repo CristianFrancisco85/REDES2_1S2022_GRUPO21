@@ -1,27 +1,28 @@
-ARG GO_VERSION=1.18.4
+ARG GO_VERSION=1.18
 
 FROM golang:${GO_VERSION}-alpine AS builder
 
-RUN go env -w GOPROXY=direct
-RUN apk add --no-cache git
-RUN apk add --no-cache add ca-certificates && update-ca-certificates
+RUN apk update && apk add alpine-sdk git && rm -rf /var/cache/apk/*
 
-WORKDIR /src
-COPY ./go.mod ./go.sum ./
+RUN mkdir -p /api
+WORKDIR /api
+
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
-COPY ./ ./
+COPY . .
+RUN go build -o ./app ./main.go
 
-RUN CGO_ENABLED=0 go build \
-    -installsuffix 'static' \
-    -o /rest 
+FROM alpine:latest
 
-FROM scratch AS runner
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY .env ./
-COPY --from=builder /rest ./rest
+RUN mkdir -p /api
+WORKDIR /api
+COPY --from=builder /api/app .
 
 EXPOSE 4000
 
-ENTRYPOINT [ "./rest" ]
+
+ENTRYPOINT ["./app"]

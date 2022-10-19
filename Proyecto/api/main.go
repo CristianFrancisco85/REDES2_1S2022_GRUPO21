@@ -14,7 +14,7 @@ func main() {
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 	DATABASE_URL := os.Getenv("DATABASE_URL")
 	fmt.Println(DATABASE_URL)
