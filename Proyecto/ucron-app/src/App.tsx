@@ -13,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}>
           <Route path="" element={<Publica/>} />
+          {/* <Route path="" element={<Finanzas/>} /> */}
           <Route path="administradores" element={<Admin/>} />
           <Route path="desarolladores" element={<Devs/>} />
           <Route path="*" element={<h1>404: Not Found</h1>} />
