@@ -3,3 +3,44 @@ docker run -p 5432:5432 -d db-postgres
 
 docker build . -t db-postgres
 docker run --network="host" -e DATABASE_URL=postgres://postgres:password@localhost:5432/redes?sslmode=disable -d -p 4000:4000 go-api
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.php index.html index.htm index.nginx-debian.html;
+    server_name 3.90.64.233;
+    location / {
+            try_files $uri $uri/ =404;
+
+    }
+}
+
+
+server {
+    listen 80;
+    listen [::]:80;
+    root  /var/www/ucron.online/html;
+    index index.php index.html index.htm index.nginx-debian.html;
+    server_name ucron.store www.ucron.store;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    root  /var/www/ucron.online/html;
+    index index.php index.html index.htm index.nginx-debian.html;
+    server_name ucron.online www.ucron.online;
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+sudo certbot --nginx -d ucron.store -d www.ucron.store
+sudo certbot --nginx -d ucron.online -d www.ucron.online
+
+sudo ln -s /etc/nginx/sites-available/ucron.online /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/ucron.store /etc/nginx/sites-enabled/
